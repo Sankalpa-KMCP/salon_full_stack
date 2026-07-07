@@ -274,4 +274,104 @@ class AvailabilityServiceIntegrationTest {
         assertEquals(4, slots.size());
         assertEquals(OffsetDateTime.of(2026, 7, 10, 9, 30, 0, 0, COLOMBO_OFFSET), slots.get(0).startTime());
     }
+
+    @Test
+    @Transactional
+    void anyStylistDeduplicatedUnionAndExclusions() {
+        // Setup a second qualified stylist (active)
+        StaffEntity staff2 = new StaffEntity();
+        staff2.setSlug("kate-stylist");
+        staff2.setName("Kate Stylist");
+        staff2.setRole("Stylist");
+        staff2.setIsActive(true);
+        staff2 = staffRepository.save(staff2);
+        staff2.getServices().add(testService);
+        staff2 = staffRepository.saveAndFlush(staff2);
+
+        // Setup a third staff (inactive but qualified)
+        StaffEntity staff3 = new StaffEntity();
+        staff3.setSlug("inactive-stylist");
+        staff3.setName("Inactive Stylist");
+        staff3.setRole("Stylist");
+        staff3.setIsActive(false);
+        staff3 = staffRepository.save(staff3);
+        staff3.getServices().add(testService);
+        staff3 = staffRepository.saveAndFlush(staff3);
+
+        LocalDate date = LocalDate.of(2026, 7, 10); // Friday (5)
+
+        // working hours for testStaff (Jessica): Friday 09:00 - 11:00
+        WorkingHoursEntity wh1 = new WorkingHoursEntity();
+        wh1.setStaff(testStaff);
+        wh1.setDayOfWeek(DayOfWeek.FRIDAY);
+        wh1.setStartTime(LocalTime.of(9, 0));
+        wh1.setEndTime(LocalTime.of(11, 0));
+        workingHoursRepository.saveAndFlush(wh1);
+
+        // working hours for staff2 (Kate): Friday 10:00 - 12:00
+        WorkingHoursEntity wh2 = new WorkingHoursEntity();
+        wh2.setStaff(staff2);
+        wh2.setDayOfWeek(DayOfWeek.FRIDAY);
+        wh2.setStartTime(LocalTime.of(10, 0));
+        wh2.setEndTime(LocalTime.of(12, 0));
+        workingHoursRepository.saveAndFlush(wh2);
+
+        // working hours for staff3 (Inactive): Friday 09:00 - 12:00
+        WorkingHoursEntity wh3 = new WorkingHoursEntity();
+        wh3.setStaff(staff3);
+        wh3.setDayOfWeek(DayOfWeek.FRIDAY);
+        wh3.setStartTime(LocalTime.of(9, 0));
+        wh3.setEndTime(LocalTime.of(12, 0));
+        workingHoursRepository.saveAndFlush(wh3);
+
+        // Active Appointment for Jessica: 10:00 - 10:45
+        // This blocks Jessica's 10:00 slot, but Kate is free, so 10:00 should be in union
+        AppointmentEntity app = new AppointmentEntity();
+        app.setCustomerName("Charlie");
+        app.setCustomerEmail("charlie@example.com");
+        app.setCustomerPhone("111");
+        app.setService(testService);
+        app.setStaff(testStaff);
+        app.setStartTime(OffsetDateTime.of(2026, 7, 10, 10, 0, 0, 0, COLOMBO_OFFSET));
+        app.setEndTime(OffsetDateTime.of(2026, 7, 10, 10, 45, 0, 0, COLOMBO_OFFSET));
+        app.setStatus(AppointmentStatus.CONFIRMED);
+        appointmentRepository.saveAndFlush(app);
+
+        List<AvailableSlot> slots = availabilityService.getAnyStylistAvailableSlots(testService.getSlug(), date);
+
+        // Expected deduplicated Union slots:
+        // 1. 09:00 - 09:45 (from Jessica only)
+        // 2. 10:00 - 10:45 (Kate is free, Jessica blocked -> Available in union!)
+        // 3. 10:30 - 11:15 (from Kate only)
+        // 4. 11:00 - 11:45 (from Kate only)
+
+        assertEquals(4, slots.size());
+
+        assertEquals(OffsetDateTime.of(2026, 7, 10, 9, 0, 0, 0, COLOMBO_OFFSET), slots.get(0).startTime());
+        assertEquals(OffsetDateTime.of(2026, 7, 10, 10, 0, 0, 0, COLOMBO_OFFSET), slots.get(1).startTime());
+        assertEquals(OffsetDateTime.of(2026, 7, 10, 10, 30, 0, 0, COLOMBO_OFFSET), slots.get(2).startTime());
+        assertEquals(OffsetDateTime.of(2026, 7, 10, 11, 0, 0, 0, COLOMBO_OFFSET), slots.get(3).startTime());
+    }
+
+    @Test
+    @Transactional
+    void anyStylistReturnsEmptyForMissingOrInactiveServiceOrNoQualifiedStaff() {
+        LocalDate date = LocalDate.of(2026, 7, 10);
+
+        // Missing service
+        assertTrue(availabilityService.getAnyStylistAvailableSlots("missing-service", date).isEmpty());
+
+        // Inactive service
+        ServiceEntity inactiveService = new ServiceEntity();
+        inactiveService.setSlug("inactive-service");
+        inactiveService.setName("Inactive Service");
+        inactiveService.setDurationMinutes(30);
+        inactiveService.setPrice(BigDecimal.valueOf(10.00));
+        inactiveService.setIsActive(false);
+        serviceRepository.saveAndFlush(inactiveService);
+        assertTrue(availabilityService.getAnyStylistAvailableSlots("inactive-service", date).isEmpty());
+
+        // No qualified staff availability (unqualifiedService has no staff qualified)
+        assertTrue(availabilityService.getAnyStylistAvailableSlots(unqualifiedService.getSlug(), date).isEmpty());
+    }
 }

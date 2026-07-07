@@ -60,6 +60,41 @@ public class AvailabilityService {
             return Collections.emptyList();
         }
 
+        return calculateStaffAvailabilityForService(service, staff, date).stream()
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<AvailableSlot> getAnyStylistAvailableSlots(String serviceSlug, LocalDate date) {
+        Optional<ServiceEntity> serviceOpt = serviceRepository.findBySlug(serviceSlug);
+        if (serviceOpt.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        ServiceEntity service = serviceOpt.get();
+        if (!service.getIsActive()) {
+            return Collections.emptyList();
+        }
+
+        // Find active staff qualified for this service
+        List<StaffEntity> activeQualifiedStaff = staffRepository.findActiveStaffByQualifiedService(service.getId());
+
+        List<AvailableSlot> unionSlots = new ArrayList<>();
+        for (StaffEntity staff : activeQualifiedStaff) {
+            unionSlots.addAll(calculateStaffAvailabilityForService(service, staff, date));
+        }
+
+        return unionSlots.stream()
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    private List<AvailableSlot> calculateStaffAvailabilityForService(
+            ServiceEntity service, StaffEntity staff, LocalDate date) {
+
         // Define target day time boundaries in Colombo zone to query overlaps
         ZonedDateTime zdtStart = date.atStartOfDay(COLOMBO_ZONE);
         ZonedDateTime zdtEnd = date.plusDays(1).atStartOfDay(COLOMBO_ZONE);
@@ -103,7 +138,7 @@ public class AvailabilityService {
             }
         }
 
-        // Filter and deduplicate slots
+        // Filter slots against blocked times and active appointments
         return candidateSlots.stream()
                 .filter(slot -> {
                     // Check blocked times overlap
@@ -118,8 +153,6 @@ public class AvailabilityService {
                             app.getStartTime().isBefore(slot.endTime()) && app.getEndTime().isAfter(slot.startTime()));
                     return !overlapsApp;
                 })
-                .distinct()
-                .sorted()
                 .collect(Collectors.toList());
     }
 }

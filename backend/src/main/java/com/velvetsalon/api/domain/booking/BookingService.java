@@ -133,6 +133,17 @@ public class BookingService {
         app.setEndTime(endTime);
         app.setStatus(AppointmentStatus.CONFIRMED);
 
-        return appointmentRepository.save(app);
+        try {
+            return appointmentRepository.saveAndFlush(app);
+        } catch (org.springframework.dao.DataIntegrityViolationException | org.springframework.dao.CannotAcquireLockException ex) {
+            String msg = ex.getMostSpecificCause().getMessage();
+            if (msg != null && (msg.contains("no_double_booking") || msg.contains("23P01") || msg.contains("deadlock detected") || msg.contains("40P01"))) {
+                throw new DoubleBookingException("The requested slot is already booked for this stylist");
+            }
+            if (msg != null && (msg.contains("fk_appointments_staff_service") || msg.contains("23503"))) {
+                throw new UnqualifiedStylistException("Stylist is not qualified for the requested service");
+            }
+            throw ex;
+        }
     }
 }

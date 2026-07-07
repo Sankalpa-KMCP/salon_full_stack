@@ -387,4 +387,70 @@ class BookingServiceIntegrationTest {
 
         assertEquals(stylistA.getId(), saved.getStaff().getId(), "Jessica should be selected because Alice is blocked.");
     }
+
+    @Test
+    void concurrentBookingsForSameSlotTriggersConflictException() throws Exception {
+        LocalDate date = LocalDate.now(COLOMBO_ZONE).plusDays(2);
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+
+        WorkingHoursEntity wh = new WorkingHoursEntity();
+        wh.setStaff(stylistA);
+        wh.setDayOfWeek(dayOfWeek);
+        wh.setStartTime(LocalTime.of(9, 0));
+        wh.setEndTime(LocalTime.of(17, 0));
+        workingHoursRepository.saveAndFlush(wh);
+
+        Instant requestedStart = date.atTime(10, 0).atZone(COLOMBO_ZONE).toInstant();
+
+        java.util.concurrent.CyclicBarrier barrier = new java.util.concurrent.CyclicBarrier(2);
+        java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(2);
+        java.util.concurrent.atomic.AtomicReference<AppointmentEntity> successAppointment = new java.util.concurrent.atomic.AtomicReference<>();
+        java.util.concurrent.atomic.AtomicReference<Exception> failureException = new java.util.concurrent.atomic.AtomicReference<>();
+
+        Runnable task = () -> {
+            try {
+                barrier.await(5, java.util.concurrent.TimeUnit.SECONDS);
+                AppointmentEntity app = bookingService.createAppointment(
+                        haircutService.getSlug(),
+                        stylistA.getSlug(),
+                        requestedStart,
+                        "Concurrent Customer",
+                        "concurrent@example.com",
+                        "+12345",
+                        "Thread Note"
+                );
+                successAppointment.set(app);
+            } catch (Exception e) {
+                failureException.set(e);
+            } finally {
+                latch.countDown();
+            }
+        };
+
+        java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newFixedThreadPool(2);
+        try {
+            executor.submit(task);
+            executor.submit(task);
+
+            boolean completed = latch.await(10, java.util.concurrent.TimeUnit.SECONDS);
+            assertTrue(completed, "Concurrency tasks timed out");
+
+            AppointmentEntity app = successAppointment.get();
+            Exception ex = failureException.get();
+
+            assertNotNull(app, "One appointment should have succeeded");
+            assertNotNull(ex, "One appointment should have failed with double booking exception");
+            assertTrue(ex instanceof DoubleBookingException, "Failure exception should be DoubleBookingException but was " + ex);
+
+            long count = appointmentRepository.count();
+            assertEquals(1, count, "Exactly 1 appointment should be persisted in database");
+        } finally {
+            executor.shutdownNow();
+            appointmentRepository.deleteAll();
+            blockedTimeRepository.deleteAll();
+            workingHoursRepository.deleteAll();
+            staffRepository.deleteAll();
+            serviceRepository.deleteAll();
+        }
+    }
 }

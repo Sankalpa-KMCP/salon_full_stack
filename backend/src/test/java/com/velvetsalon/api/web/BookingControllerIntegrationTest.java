@@ -189,7 +189,7 @@ class BookingControllerIntegrationTest {
                         .content(invalidJson))
                 .andExpect(status().isBadRequest());
     }
-    
+
     @Test
     @Transactional
     void invalidEmailReturns400() throws Exception {
@@ -232,7 +232,7 @@ class BookingControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().isBadRequest());
-                
+
         assertEquals(0, appointmentRepository.count(), "No appointment should be persisted on 400");
     }
 

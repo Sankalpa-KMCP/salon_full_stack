@@ -76,7 +76,7 @@ public class BookingService {
         }
 
         StaffEntity selectedStaff = null;
-        if ("any".equalsIgnoreCase(staffSlug.trim())) {
+        if ("any".equals(staffSlug)) {
             // Find active staff qualified for the service
             List<StaffEntity> activeQualifiedStaff = staffRepository.findActiveStaffByQualifiedService(service.getId());
             // Make a mutable copy to sort safely

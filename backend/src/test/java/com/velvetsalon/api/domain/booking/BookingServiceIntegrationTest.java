@@ -346,6 +346,48 @@ class BookingServiceIntegrationTest {
 
     @Test
     @Transactional
+    void nonExactAnyStylistVariantsDoNotTriggerAllocation() {
+        LocalDate date = LocalDate.now(COLOMBO_ZONE).plusDays(2);
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+
+        WorkingHoursEntity whA = new WorkingHoursEntity();
+        whA.setStaff(stylistA);
+        whA.setDayOfWeek(dayOfWeek);
+        whA.setStartTime(LocalTime.of(9, 0));
+        whA.setEndTime(LocalTime.of(17, 0));
+        workingHoursRepository.saveAndFlush(whA);
+
+        Instant requestedStart = date.atTime(10, 0).atZone(COLOMBO_ZONE).toInstant();
+
+        // 1. Uppercase "ANY"
+        assertThrows(BookingValidationException.class, () -> {
+            bookingService.createAppointment(
+                    haircutService.getSlug(),
+                    "ANY",
+                    requestedStart,
+                    "Customer Any",
+                    "any@example.com",
+                    "+9999",
+                    "Notes"
+            );
+        }, "Stylist not found: ANY");
+
+        // 2. Whitespace variant " any "
+        assertThrows(BookingValidationException.class, () -> {
+            bookingService.createAppointment(
+                    haircutService.getSlug(),
+                    " any ",
+                    requestedStart,
+                    "Customer Any",
+                    "any@example.com",
+                    "+9999",
+                    "Notes"
+            );
+        }, "Stylist not found:  any ");
+    }
+
+    @Test
+    @Transactional
     void staffSlugAnySkipsUnavailableStylistAndSelectsNext() {
         LocalDate date = LocalDate.now(COLOMBO_ZONE).plusDays(2);
         DayOfWeek dayOfWeek = date.getDayOfWeek();

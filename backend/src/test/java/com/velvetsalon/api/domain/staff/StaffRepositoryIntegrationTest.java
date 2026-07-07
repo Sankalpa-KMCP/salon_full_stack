@@ -59,7 +59,7 @@ class StaffRepositoryIntegrationTest {
         // 3. Retrieve and verify
         Optional<StaffEntity> retrievedOpt = staffRepository.findBySlug("jane-doe");
         assertTrue(retrievedOpt.isPresent());
-        
+
         StaffEntity retrieved = retrievedOpt.get();
         assertEquals("Jane Doe", retrieved.getName());
         assertEquals("Senior Stylist", retrieved.getRole());

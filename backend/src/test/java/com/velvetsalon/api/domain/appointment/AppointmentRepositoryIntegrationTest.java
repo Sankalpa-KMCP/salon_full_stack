@@ -63,6 +63,10 @@ class AppointmentRepositoryIntegrationTest {
         service.setDurationMinutes(30);
         service.setPrice(BigDecimal.valueOf(45.00));
         testService = serviceRepository.save(service);
+
+        // Qualify the staff member for the service
+        testStaff.getServices().add(testService);
+        testStaff = staffRepository.saveAndFlush(testStaff);
     }
 
     @Test
@@ -298,5 +302,39 @@ class AppointmentRepositoryIntegrationTest {
         assertDoesNotThrow(() -> {
             appointmentRepository.saveAndFlush(app2);
         });
+    }
+
+    @Test
+    @Transactional
+    void rejectsUnqualifiedStaffServiceAppointment() {
+        // Create another service for which Jessica is NOT qualified
+        ServiceEntity unqualifiedService = new ServiceEntity();
+        unqualifiedService.setSlug("coloring");
+        unqualifiedService.setName("Coloring");
+        unqualifiedService.setDurationMinutes(60);
+        unqualifiedService.setPrice(BigDecimal.valueOf(120.00));
+        unqualifiedService = serviceRepository.save(unqualifiedService);
+
+        // Save appointment with the unqualified service
+        OffsetDateTime startTime = OffsetDateTime.of(2026, 7, 10, 16, 0, 0, 0, ZoneOffset.UTC);
+        OffsetDateTime endTime = OffsetDateTime.of(2026, 7, 10, 17, 0, 0, 0, ZoneOffset.UTC);
+
+        AppointmentEntity app = new AppointmentEntity();
+        app.setCustomerName("Unqualified Test");
+        app.setCustomerEmail("test@example.com");
+        app.setCustomerPhone("+9999");
+        app.setService(unqualifiedService);
+        app.setStaff(testStaff); // Jessica is not qualified for coloring!
+        app.setStartTime(startTime);
+        app.setEndTime(endTime);
+        app.setStatus(AppointmentStatus.PENDING);
+
+        DataIntegrityViolationException ex = assertThrows(DataIntegrityViolationException.class, () -> {
+            appointmentRepository.saveAndFlush(app);
+        });
+
+        String rootMsg = ex.getMostSpecificCause().getMessage();
+        assertTrue(rootMsg.contains("fk_appointments_staff_service") || rootMsg.contains("23503"),
+                "Expected foreign key violation due to 'fk_appointments_staff_service' or SQLState 23503. Found: " + rootMsg);
     }
 }

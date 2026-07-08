@@ -1,16 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #0f1115; /* deep charcoal / near black */
-  --color-foreground: #fafafa;
+  --color-background: #090a0f; /* richer, deeper charcoal */
+  --color-foreground: #fcfcfc;
   
-  --color-accent: #d4af37; /* champagne / muted gold */
-  --color-accent-foreground: #000000;
+  --color-accent: #c19b52; /* sophisticated champagne gold */
+  --color-accent-foreground: #090a0f;
 
-  --color-ring: #d4af37;
+  --color-ring: #c19b52;
   
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-playfair); /* serif display font */
 }
 
 :root {
@@ -23,6 +24,16 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle background gradient overlay for premium feel */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(193, 155, 82, 0.05) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 ::selection {

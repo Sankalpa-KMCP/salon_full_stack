@@ -17,31 +17,31 @@ export function SiteHeader() {
   }, [isMobileMenuOpen]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-background/80 backdrop-blur-md">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-background/70 backdrop-blur-xl">
+      <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
-          <span className="text-xl font-semibold tracking-tight text-foreground">
+          <span className="text-2xl font-display font-medium tracking-wide text-foreground">
             Velvet Salon
           </span>
         </Link>
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-          <Link href="/services" className="text-foreground/80 hover:text-accent transition-colors">
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide uppercase text-foreground/70">
+          <Link href="/services" className="hover:text-accent transition-colors">
             Services
           </Link>
-          <Link href="/team" className="text-foreground/80 hover:text-accent transition-colors">
+          <Link href="/team" className="hover:text-accent transition-colors">
             Team
           </Link>
-          <Link href="/gallery" className="text-foreground/80 hover:text-accent transition-colors">
+          <Link href="/gallery" className="hover:text-accent transition-colors">
             Gallery
           </Link>
-          <Link href="/contact" className="text-foreground/80 hover:text-accent transition-colors">
+          <Link href="/contact" className="hover:text-accent transition-colors">
             Contact
           </Link>
         </nav>
         <div className="flex items-center gap-4">
           <Link
             href="/booking"
-            className="hidden md:inline-flex h-9 items-center justify-center rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-foreground shadow transition-colors hover:bg-accent/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+            className="hidden md:inline-flex h-10 items-center justify-center rounded-sm bg-accent/90 px-6 py-2 text-sm font-medium text-accent-foreground shadow-md shadow-accent/10 transition-all hover:bg-accent hover:shadow-accent/20 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
           >
             Book Now
           </Link>
@@ -73,23 +73,23 @@ export function SiteHeader() {
       </div>
       
       {isMobileMenuOpen && (
-        <div id="mobile-menu" className="md:hidden border-t border-white/10 bg-background px-4 py-4">
-          <nav className="flex flex-col gap-4 text-sm font-medium">
-            <Link href="/services" className="text-foreground/80 hover:text-accent transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+        <div id="mobile-menu" className="md:hidden border-t border-white/5 bg-background/95 backdrop-blur-xl px-4 py-4">
+          <nav className="flex flex-col gap-4 text-sm font-medium tracking-wide uppercase">
+            <Link href="/services" className="text-foreground/70 hover:text-accent transition-colors py-2" onClick={() => setIsMobileMenuOpen(false)}>
               Services
             </Link>
-            <Link href="/team" className="text-foreground/80 hover:text-accent transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+            <Link href="/team" className="text-foreground/70 hover:text-accent transition-colors py-2" onClick={() => setIsMobileMenuOpen(false)}>
               Team
             </Link>
-            <Link href="/gallery" className="text-foreground/80 hover:text-accent transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+            <Link href="/gallery" className="text-foreground/70 hover:text-accent transition-colors py-2" onClick={() => setIsMobileMenuOpen(false)}>
               Gallery
             </Link>
-            <Link href="/contact" className="text-foreground/80 hover:text-accent transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+            <Link href="/contact" className="text-foreground/70 hover:text-accent transition-colors py-2" onClick={() => setIsMobileMenuOpen(false)}>
               Contact
             </Link>
             <Link
               href="/booking"
-              className="mt-2 inline-flex h-9 w-full items-center justify-center rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-foreground shadow transition-colors hover:bg-accent/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-sm bg-accent/90 px-4 py-2 text-sm font-medium text-accent-foreground shadow transition-all hover:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Book Now

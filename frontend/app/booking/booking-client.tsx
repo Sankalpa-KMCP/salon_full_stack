@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { apiClient, ServiceDto, StaffDto, SlotDto, BookingResponseDto, ApiError, API_BASE_URL } from '@/lib/api-client';
 
 export default function BookingClient() {
@@ -246,6 +247,13 @@ export default function BookingClient() {
           >
             Book Another Appointment
           </button>
+
+          <Link
+            href={`/booking/manage?token=${encodeURIComponent(successData.booking.cancellationToken)}`}
+            className="mt-2 px-6 py-3 border border-white/20 hover:bg-white/5 rounded-md text-sm font-medium transition-colors text-center"
+          >
+            Manage / Cancel Appointment
+          </Link>
         </div>
       </div>
     );

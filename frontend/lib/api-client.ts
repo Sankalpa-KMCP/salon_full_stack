@@ -109,5 +109,15 @@ export const apiClient = {
       method: 'POST',
       body: JSON.stringify(data),
     });
+  },
+
+  getBooking: (token: string) => {
+    return fetchJson<BookingResponseDto>(`/api/booking/${encodeURIComponent(token)}`);
+  },
+
+  cancelBooking: (token: string) => {
+    return fetchJson<void>(`/api/booking/${encodeURIComponent(token)}`, {
+      method: 'DELETE',
+    });
   }
 };

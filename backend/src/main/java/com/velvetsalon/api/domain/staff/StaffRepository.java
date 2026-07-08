@@ -13,7 +13,8 @@ import java.util.UUID;
 public interface StaffRepository extends JpaRepository<StaffEntity, UUID> {
     Optional<StaffEntity> findBySlug(String slug);
     List<StaffEntity> findByIsActiveTrue();
+    List<StaffEntity> findByIsActiveTrueOrderByNameAsc();
 
-    @Query("SELECT s FROM StaffEntity s JOIN s.services serv WHERE s.isActive = true AND serv.id = :serviceId")
+    @Query("SELECT s FROM StaffEntity s JOIN s.services serv WHERE s.isActive = true AND serv.id = :serviceId ORDER BY s.name ASC")
     List<StaffEntity> findActiveStaffByQualifiedService(@Param("serviceId") UUID serviceId);
 }

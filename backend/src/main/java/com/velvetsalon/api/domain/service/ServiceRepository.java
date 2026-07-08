@@ -10,5 +10,7 @@ import java.util.UUID;
 @Repository
 public interface ServiceRepository extends JpaRepository<ServiceEntity, UUID> {
     Optional<ServiceEntity> findBySlug(String slug);
+    Optional<ServiceEntity> findBySlugAndIsActiveTrue(String slug);
     List<ServiceEntity> findByIsActiveTrue();
+    List<ServiceEntity> findByIsActiveTrueOrderByNameAsc();
 }

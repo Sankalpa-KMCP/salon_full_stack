@@ -3,6 +3,7 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { apiClient, BookingResponseDto, ServiceDto, ApiError, API_BASE_URL } from '@/lib/api-client';
 
 export default function ManageClient() {
@@ -117,10 +118,14 @@ export default function ManageClient() {
 
   if (configError) {
     return (
-      <div className="flex flex-col items-center justify-center flex-1 bg-background p-4 font-sans">
-        <div className="max-w-md p-6 bg-red-500/10 border border-red-500/20 rounded-xl text-center">
-          <h2 className="text-lg font-semibold text-red-500 mb-2">Configuration Error</h2>
-          <p className="text-sm text-red-400">{configError}</p>
+      <div className="flex flex-col flex-1 bg-black font-sans items-center justify-center p-8 text-center relative">
+        <div className="absolute inset-0 z-0">
+          <Image src="/media/hero-ambience.webp" alt="Background" fill className="object-cover opacity-30 mix-blend-luminosity" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/80 to-background" />
+        </div>
+        <div className="relative z-10 p-10 bg-white/5 border border-white/10 rounded-sm max-w-lg backdrop-blur-sm">
+          <h2 className="text-2xl font-display text-accent mb-4 uppercase tracking-widest text-red-400">System Unavailable</h2>
+          <p className="text-foreground/70 font-light text-sm">{configError}</p>
         </div>
       </div>
     );
@@ -132,99 +137,121 @@ export default function ManageClient() {
     : '';
 
   return (
-    <div className="flex flex-col flex-1 bg-background font-sans">
-      <main className="flex-1 flex flex-col items-center py-20 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-2xl mx-auto flex flex-col gap-10">
+    <div className="flex flex-col flex-1 bg-black font-sans relative min-h-screen">
+      {/* Cinematic Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <Image src="/media/hero-ambience.webp" alt="Velvet Salon Ambience" fill className="object-cover opacity-25 mix-blend-luminosity" priority />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-background/50" />
+      </div>
 
-          <div className="flex flex-col items-center gap-4 text-center">
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
-              Manage Appointment
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center py-20 px-4 sm:px-6 lg:px-8 w-full max-w-4xl mx-auto">
+        <div className="w-full flex flex-col gap-12 items-center">
+
+          <div className="flex flex-col items-center gap-6 text-center max-w-xl">
+            <span className="text-accent/60 font-light tracking-[0.3em] uppercase text-xs">Client Portal</span>
+            <h1 className="text-4xl sm:text-5xl font-display text-foreground leading-tight">
+              Manage Your<br />Reservation.
             </h1>
-            <p className="text-lg text-foreground/60 max-w-xl">
-              Enter your cancellation token below to retrieve or cancel your appointment.
+            <p className="text-foreground/60 font-light text-sm leading-relaxed">
+              Enter your secure cancellation token below to retrieve your itinerary or amend your appointment.
             </p>
           </div>
 
-          <form onSubmit={onSubmit} className="flex gap-2 w-full max-w-md mx-auto">
-            <input
-              type="text"
-              value={tokenInput}
-              onChange={(e) => setTokenInput(e.target.value)}
-              placeholder="Cancellation Token"
-              className="flex-1 h-12 rounded-md border border-white/20 bg-background px-4 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              required
-            />
+          <form onSubmit={onSubmit} className="flex flex-col sm:flex-row gap-4 w-full max-w-lg mx-auto relative group">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                value={tokenInput}
+                onChange={(e) => setTokenInput(e.target.value)}
+                placeholder="Cancellation Token"
+                className="w-full h-14 bg-white/5 border border-white/20 px-6 py-2 text-sm tracking-widest text-foreground font-light focus:outline-none focus:border-accent disabled:opacity-50 transition-colors backdrop-blur-sm placeholder:text-foreground/30 text-center sm:text-left"
+                required
+              />
+            </div>
             <button
               type="submit"
               disabled={loading || !tokenInput.trim()}
-              className="h-12 px-6 rounded-md bg-accent text-accent-foreground font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="h-14 px-8 bg-accent text-accent-foreground text-xs uppercase tracking-widest font-medium hover:bg-white transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center min-w-[140px]"
             >
-              {loading ? 'Looking up...' : 'Lookup'}
+              {loading ? (
+                <span className="w-4 h-4 border-2 border-background/20 border-t-background rounded-full animate-spin" />
+              ) : 'Retrieve'}
             </button>
           </form>
 
           {error && (
-            <div className="w-full p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm text-center">
+            <div className="w-full max-w-lg p-6 bg-red-500/5 border-l-2 border-red-500/50 text-red-400 text-sm font-light text-center backdrop-blur-sm">
               {error}
             </div>
           )}
 
           {appointment && !loading && (
-            <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-8 flex flex-col items-center text-center gap-6 mt-4">
-              <div className="flex flex-col items-center gap-2">
-                <div className={`px-4 py-1 rounded-full text-xs font-semibold ${
+            <div className="w-full max-w-2xl bg-white/5 border border-white/10 p-8 sm:p-12 flex flex-col items-center text-center gap-8 backdrop-blur-md shadow-2xl relative overflow-hidden mt-4">
+              {/* Receipt styling overlay */}
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-accent/50 to-transparent opacity-50" />
+
+              <div className="flex flex-col items-center gap-4 w-full">
+                <div className={`px-4 py-1.5 text-[10px] uppercase tracking-widest font-medium border ${
                   appointment.status === 'CANCELLED'
-                    ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                    : 'bg-green-500/20 text-green-400 border border-green-500/30'
+                    ? 'bg-red-500/10 text-red-400 border-red-500/20'
+                    : 'bg-green-500/10 text-green-400 border-green-500/20'
                 }`}>
                   {appointment.status}
                 </div>
-                <h2 className="text-2xl font-semibold text-foreground mt-2">
+
+                <h2 className="text-3xl font-display text-foreground mt-4">
                   {formatDate(appointment.startTime)}
                 </h2>
+                <div className="w-12 h-[1px] bg-accent/40 my-2" />
               </div>
 
-              <div className="w-full bg-black/20 rounded-xl p-6 text-left border border-white/5">
-                <div className="grid grid-cols-2 gap-y-4 text-sm">
-                  <div className="text-foreground/50">Service</div>
-                  <div className="font-medium text-foreground text-right">{resolvedServiceName}</div>
+              <div className="w-full bg-black/40 border border-white/5 p-8 flex flex-col gap-6 relative">
+                <div className="grid grid-cols-2 gap-y-6 text-sm font-light">
+                  <div className="text-foreground/40 uppercase tracking-widest text-xs text-left">Service</div>
+                  <div className="text-foreground text-right">{resolvedServiceName}</div>
 
-                  <div className="text-foreground/50">Stylist</div>
-                  <div className="font-medium text-foreground text-right">{appointment.staffName}</div>
+                  <div className="text-foreground/40 uppercase tracking-widest text-xs text-left">Curator</div>
+                  <div className="text-foreground text-right">{appointment.staffName}</div>
 
-                  <div className="text-foreground/50">Time</div>
-                  <div className="font-medium text-foreground text-right">
-                    {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
+                  <div className="text-foreground/40 uppercase tracking-widest text-xs text-left">Duration</div>
+                  <div className="text-foreground text-right">
+                    {formatTime(appointment.startTime)} &mdash; {formatTime(appointment.endTime)}
                   </div>
                 </div>
               </div>
 
               {appointment.status !== 'CANCELLED' ? (
-                <div className="w-full flex flex-col gap-4 mt-2">
+                <div className="w-full flex flex-col gap-6 mt-4">
+                  <p className="text-xs text-foreground/50 font-light italic">
+                    Amendments or cancellations must be finalized at least 24 hours prior to your scheduled arrival.
+                  </p>
                   <button
                     onClick={handleCancel}
                     disabled={cancelling}
-                    className="w-full py-4 bg-red-500/20 hover:bg-red-500/30 text-red-500 rounded-xl font-medium transition-colors border border-red-500/20 disabled:opacity-50"
+                    className="w-full py-5 bg-red-950/30 hover:bg-red-900/40 text-red-400 border border-red-900/30 text-xs uppercase tracking-widest font-medium transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-3"
                   >
-                    {cancelling ? 'Cancelling...' : 'Cancel Appointment'}
+                    {cancelling ? (
+                      <>
+                        <span className="w-4 h-4 border-2 border-red-400/20 border-t-red-400 rounded-full animate-spin" />
+                        Processing...
+                      </>
+                    ) : 'Cancel Reservation'}
                   </button>
-                  <p className="text-xs text-foreground/50">
-                    Cancellations must be made at least 24 hours in advance.
-                  </p>
                 </div>
               ) : (
-                <div className="w-full p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-green-400 text-sm">
-                  Your appointment has been successfully cancelled.
+                <div className="w-full p-6 bg-background/40 border border-white/5 text-foreground/60 text-sm font-light mt-4">
+                  This reservation has been successfully annulled.
                 </div>
               )}
             </div>
           )}
 
-          <div className="flex justify-center pt-8">
+          <div className="flex justify-center pt-12">
             <Link
               href="/booking"
-              className="text-sm text-foreground/60 hover:text-foreground underline underline-offset-4"
+              className="text-xs uppercase tracking-widest text-accent/70 hover:text-accent transition-colors flex items-center gap-2"
             >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
               Return to Booking
             </Link>
           </div>

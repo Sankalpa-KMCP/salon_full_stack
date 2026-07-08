@@ -5,148 +5,239 @@ import { staffMembers } from '@/lib/staff';
 export default function Home() {
   return (
     <div className="flex flex-col flex-1 bg-transparent font-sans">
-      <main className="flex-1 flex flex-col items-center">
+      <main className="flex-1 flex flex-col items-center w-full">
         
-        {/* Hero Section */}
-        <section className="w-full flex flex-col items-center justify-center min-h-[70vh] py-20 px-4 sm:px-6 lg:px-8">
-          <div className="w-full max-w-4xl mx-auto flex flex-col items-center text-center gap-8">
+        {/* Cinematic Hero Section */}
+        <section className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden">
+          {/* Media Placeholder: Future Hero Video */}
+          <div className="absolute inset-0 z-0 bg-black">
+            {/* Temporary Gradient Placeholder */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-accent/10 via-background to-background opacity-80" />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background" />
+            <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')]" />
+          </div>
+
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
             {/* Eyebrow */}
-            <div className="inline-block px-4 py-1.5 rounded-sm border border-accent/30 bg-accent/5 backdrop-blur-sm">
-              <span className="text-xs font-semibold tracking-[0.2em] text-accent uppercase">
-                Premium Hair & Beauty
+            <div className="inline-block px-4 py-1.5 rounded-sm border border-accent/20 bg-accent/5 backdrop-blur-md mb-8">
+              <span className="text-[10px] sm:text-xs font-semibold tracking-[0.3em] text-accent uppercase">
+                Artistry & Elegance
               </span>
             </div>
             
             {/* Headline */}
-            <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-medium tracking-wide text-foreground">
-              Elevate Your Style <br/> at <span className="text-accent italic">Velvet Salon</span>
+            <h1 className="text-5xl sm:text-7xl md:text-8xl font-display font-medium tracking-tight text-foreground leading-[1.1] mb-6">
+              Discover <br className="hidden sm:block"/> <span className="text-accent italic">Velvet</span> Salon
             </h1>
             
             {/* Copy */}
-            <p className="max-w-2xl text-lg sm:text-xl font-light tracking-wide leading-relaxed text-foreground/70">
-              Experience world-class styling, coloring, and spa treatments in a luxurious, relaxing atmosphere tailored to you.
+            <p className="max-w-2xl text-lg sm:text-xl font-light tracking-wide leading-relaxed text-foreground/70 mb-12">
+              A sanctuary for bespoke styling, advanced coloring, and immersive spa treatments. Tailored for those who seek perfection.
             </p>
             
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center gap-6 mt-8 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row items-center gap-6 w-full sm:w-auto">
               <Link
                 href="/booking"
-                className="flex h-12 w-full sm:w-auto items-center justify-center rounded-sm bg-accent/90 px-10 text-sm font-medium tracking-wide uppercase text-accent-foreground shadow-lg shadow-accent/10 transition-all hover:bg-accent hover:shadow-accent/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="group relative flex h-14 w-full sm:w-auto items-center justify-center overflow-hidden rounded-sm bg-accent px-12 text-sm font-medium tracking-[0.15em] uppercase text-accent-foreground shadow-xl shadow-accent/10 transition-all hover:bg-accent/90"
               >
-                Book Appointment
+                <span className="relative z-10">Reserve a Moment</span>
+                <div className="absolute inset-0 -translate-x-full bg-white/20 transition-transform duration-500 group-hover:translate-x-0" />
               </Link>
               <Link
-                href="#featured-services"
-                className="flex h-12 w-full sm:w-auto items-center justify-center rounded-sm border border-white/20 bg-black/20 backdrop-blur-sm px-10 text-sm font-medium tracking-wide uppercase text-foreground transition-all hover:bg-white/10 hover:border-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                href="#sensory-story"
+                className="flex h-14 w-full sm:w-auto items-center justify-center rounded-sm border border-white/20 bg-black/30 backdrop-blur-md px-12 text-sm font-medium tracking-[0.15em] uppercase text-foreground transition-all hover:bg-white/10 hover:border-white/40"
               >
-                Explore Services
+                Explore Experience
               </Link>
             </div>
-            
-            {/* Trust Row */}
-            <div className="mt-16 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-sm tracking-wide text-foreground/50 uppercase">
-              <div className="flex items-center gap-3">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent"></span>
-                Open Tue–Sun, 09:00 AM – 07:00 PM
+          </div>
+        </section>
+
+        {/* Sensory Story / Salon Experience */}
+        <section id="sensory-story" className="relative w-full py-32 px-4 sm:px-6 lg:px-8 bg-background border-t border-white/5">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="flex flex-col gap-8 order-2 lg:order-1">
+              <h2 className="text-4xl sm:text-6xl font-display font-medium text-foreground leading-tight">
+                A Symphony of <span className="text-accent italic">Senses</span>
+              </h2>
+              <p className="text-lg font-light tracking-wide leading-relaxed text-foreground/70">
+                From the moment you step through our doors, you are enveloped in an atmosphere of serene luxury. The ambient lighting, the subtle fragrance of botanical oils, and the meticulous attention of our master stylists converge to create an experience that transcends traditional salon care.
+              </p>
+              <p className="text-lg font-light tracking-wide leading-relaxed text-foreground/70">
+                We believe that true beauty is an expression of holistic well-being. Our bespoke treatments are designed not just to elevate your aesthetic, but to rejuvenate your spirit.
+              </p>
+              <div className="pt-8 flex items-center gap-12 text-sm font-medium tracking-[0.2em] uppercase text-foreground/50">
+                <div className="flex flex-col gap-2">
+                  <span className="text-3xl font-display text-accent">15+</span>
+                  Years of Excellence
+                </div>
+                <div className="flex flex-col gap-2">
+                  <span className="text-3xl font-display text-accent">3</span>
+                  Master Stylists
+                </div>
               </div>
-              <div className="hidden sm:block text-foreground/20">•</div>
-              <div className="flex items-center gap-3">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent"></span>
-                Colombo, Sri Lanka
+            </div>
+            {/* Media Placeholder: Experience Image */}
+            <div className="relative order-1 lg:order-2 aspect-[4/5] w-full rounded-sm overflow-hidden bg-white/5 border border-white/10 group">
+              <div className="absolute inset-0 bg-gradient-to-tr from-accent/5 to-transparent mix-blend-overlay" />
+              <div className="absolute inset-0 flex items-center justify-center text-foreground/20 font-light tracking-widest uppercase text-sm">
+                [ Media Placeholder: Salon Interior ]
               </div>
             </div>
           </div>
         </section>
 
-        {/* Featured Services Section */}
-        <section id="featured-services" className="w-full py-24 px-4 sm:px-6 lg:px-8 border-t border-white/5 bg-background/50">
-          <div className="w-full max-w-5xl mx-auto flex flex-col gap-16">
-            
-            {/* Section Header */}
-            <div className="flex flex-col gap-4 text-center sm:text-left">
-              <h2 className="text-4xl sm:text-5xl font-display font-medium text-foreground">
-                Featured Services
-              </h2>
-              <p className="max-w-2xl text-base sm:text-lg font-light tracking-wide text-foreground/60">
-                Discover our most popular treatments, meticulously crafted to help you look and feel your absolute best.
-              </p>
+        {/* Signature Services */}
+        <section id="services" className="w-full py-32 px-4 sm:px-6 lg:px-8 border-t border-white/5 relative">
+          {/* Ambient Background Element */}
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-accent/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+
+          <div className="w-full max-w-7xl mx-auto flex flex-col gap-20 relative z-10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <div className="flex flex-col gap-6 max-w-2xl">
+                <span className="text-xs font-semibold tracking-[0.2em] text-accent uppercase">Our Offerings</span>
+                <h2 className="text-4xl sm:text-6xl font-display font-medium text-foreground">
+                  Signature Services
+                </h2>
+              </div>
+              <Link
+                href="/booking"
+                className="inline-flex items-center gap-2 text-sm font-medium tracking-[0.15em] uppercase text-foreground hover:text-accent transition-colors pb-2 border-b border-white/20 hover:border-accent"
+              >
+                View Full Menu &rarr;
+              </Link>
             </div>
 
-            {/* Services Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredServices.map((service) => (
                 <div 
                   key={service.id}
-                  className="flex flex-col justify-between p-8 rounded-sm border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:bg-white/[0.04] hover:border-accent/30 transition-all duration-300"
+                  className="group flex flex-col rounded-sm border border-white/10 bg-black/40 overflow-hidden hover:border-accent/40 transition-all duration-500"
                 >
-                  <div className="flex flex-col gap-3">
-                    <h3 className="text-2xl font-display text-foreground">
-                      {service.name}
-                    </h3>
-                    <div className="flex items-center gap-4 text-sm tracking-wide text-foreground/50 uppercase">
-                      <span>{service.durationMinutes} min</span>
+                  {/* Media Placeholder: Service Image */}
+                  <div className="relative aspect-[16/10] bg-white/5 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
+                    <div className="absolute inset-0 flex items-center justify-center text-foreground/20 font-light tracking-widest text-[10px] uppercase">
+                      [ Image: {service.name} ]
                     </div>
                   </div>
-                  <div className="mt-10 flex items-center justify-between">
-                    <span className="text-xl font-medium tracking-wide text-accent">
-                      {service.priceFormatted}
-                    </span>
-                    <Link 
-                      href="/booking" 
-                      className="text-sm font-medium tracking-wide uppercase text-foreground/70 hover:text-accent transition-colors"
-                      aria-label={`Book ${service.name}`}
-                    >
-                      Book &rarr;
-                    </Link>
+
+                  <div className="flex flex-col flex-1 p-8 relative z-20 -mt-12">
+                    <div className="flex justify-between items-start mb-6">
+                      <h3 className="text-3xl font-display text-foreground group-hover:text-accent transition-colors">
+                        {service.name}
+                      </h3>
+                    </div>
+                    <p className="text-sm font-light tracking-wide leading-relaxed text-foreground/60 mb-8 flex-1">
+                      A customized treatment experience requiring {service.durationMinutes} minutes of dedicated artistry.
+                    </p>
+                    <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/10">
+                      <span className="text-xl font-medium tracking-wide text-foreground">
+                        {service.priceFormatted}
+                      </span>
+                      <Link
+                        href="/booking"
+                        className="text-xs font-semibold tracking-[0.15em] uppercase text-accent hover:text-white transition-colors"
+                      >
+                        Book &rarr;
+                      </Link>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
-
           </div>
         </section>
 
-        {/* Our Team Section */}
-        <section id="our-team" className="w-full py-24 px-4 sm:px-6 lg:px-8 border-t border-white/5">
-          <div className="w-full max-w-5xl mx-auto flex flex-col gap-16">
-            
-            {/* Section Header */}
-            <div className="flex flex-col items-center gap-4 text-center">
-              <h2 className="text-4xl sm:text-5xl font-display font-medium text-foreground">
-                Our Team
+        {/* Curators of Style / Team */}
+        <section id="our-team" className="w-full py-32 px-4 sm:px-6 lg:px-8 border-t border-white/5 bg-black/20">
+          <div className="w-full max-w-7xl mx-auto flex flex-col gap-20">
+            <div className="flex flex-col items-center text-center gap-6 max-w-3xl mx-auto">
+              <span className="text-xs font-semibold tracking-[0.2em] text-accent uppercase">The Artisans</span>
+              <h2 className="text-4xl sm:text-6xl font-display font-medium text-foreground">
+                Curators of Style
               </h2>
-              <p className="max-w-2xl text-base sm:text-lg font-light tracking-wide text-foreground/60">
-                Meet the talented professionals dedicated to providing you with an exceptional salon experience.
+              <p className="text-lg font-light tracking-wide text-foreground/60">
+                Our resident experts bring decades of international experience and an unyielding passion for their craft.
               </p>
             </div>
 
-            {/* Team Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               {staffMembers.map((staff) => (
                 <div 
                   key={staff.id}
-                  className="group flex flex-col items-center text-center p-10 rounded-sm border border-white/5 bg-white/[0.02] backdrop-blur-sm hover:bg-white/[0.04] hover:border-accent/30 transition-all duration-300"
+                  className="group flex flex-col items-center text-center"
                 >
-                  <div className="h-32 w-32 rounded-full bg-black/40 border border-white/10 flex items-center justify-center mb-8 group-hover:border-accent/50 transition-colors">
-                    <span className="text-4xl font-display text-accent/50 group-hover:text-accent transition-colors">
-                      {staff.name.charAt(0)}
-                    </span>
+                  {/* Media Placeholder: Portrait */}
+                  <div className="relative w-full aspect-[4/5] mb-8 overflow-hidden rounded-sm bg-white/5 border border-white/10">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 opacity-80 group-hover:opacity-40 transition-opacity duration-500" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-6xl font-display text-accent/20 group-hover:text-accent/40 transition-colors duration-500">
+                        {staff.name.charAt(0)}
+                      </span>
+                      <span className="mt-4 text-[10px] font-light tracking-widest uppercase text-foreground/20">
+                        [ Portrait Placeholder ]
+                      </span>
+                    </div>
                   </div>
-                  <h3 className="text-2xl font-display text-foreground mb-2">
+
+                  <h3 className="text-3xl font-display text-foreground mb-3">
                     {staff.name}
                   </h3>
-                  <p className="text-xs font-semibold tracking-widest uppercase text-accent mb-4">
+                  <p className="text-xs font-semibold tracking-[0.2em] uppercase text-accent mb-4">
                     {staff.role}
                   </p>
-                  <p className="text-sm font-light tracking-wide text-foreground/50">
-                    Specialty: {staff.specialty}
+                  <p className="text-sm font-light tracking-wide text-foreground/50 border-t border-white/10 pt-4 px-6 w-full">
+                    Master of {staff.specialty}
                   </p>
                 </div>
               ))}
             </div>
-            
           </div>
         </section>
+
+        {/* Concierge / Final CTA */}
+        <section className="relative w-full py-40 px-4 sm:px-6 lg:px-8 border-t border-white/5 overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-accent/10 via-background to-background opacity-60" />
+
+          <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center text-center gap-10">
+            <h2 className="text-5xl sm:text-7xl font-display font-medium text-foreground">
+              Begin Your <span className="text-accent italic">Journey</span>
+            </h2>
+            <p className="text-xl font-light tracking-wide text-foreground/60 max-w-2xl">
+              Secure your appointment through our digital concierge. Select your service, choose your artisan, and reserve your time.
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row gap-6 w-full sm:w-auto">
+              <Link
+                href="/booking"
+                className="flex h-14 w-full sm:w-auto items-center justify-center rounded-sm bg-accent px-12 text-sm font-medium tracking-[0.15em] uppercase text-accent-foreground shadow-xl shadow-accent/20 transition-all hover:bg-accent/90 hover:scale-[1.02]"
+              >
+                Book Now
+              </Link>
+              <Link
+                href="/booking/manage"
+                className="flex h-14 w-full sm:w-auto items-center justify-center rounded-sm border border-white/20 bg-transparent px-12 text-sm font-medium tracking-[0.15em] uppercase text-foreground transition-all hover:bg-white/5 hover:border-white/40"
+              >
+                Manage Appointment
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Minimal Footer */}
+        <footer className="w-full border-t border-white/10 bg-black/60 py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="text-2xl font-display font-medium tracking-wide text-foreground">
+              Velvet Salon
+            </div>
+            <div className="flex items-center gap-6 text-xs font-light tracking-widest uppercase text-foreground/50">
+              <Link href="/privacy" className="hover:text-accent transition-colors">Privacy</Link>
+              <Link href="/terms" className="hover:text-accent transition-colors">Terms</Link>
+              <span>&copy; {new Date().getFullYear()} Velvet Salon</span>
+            </div>
+          </div>
+        </footer>
 
       </main>
     </div>

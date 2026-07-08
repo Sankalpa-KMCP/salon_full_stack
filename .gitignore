@@ -38,3 +38,8 @@ backend/.mvn/*
 !backend/.mvn/wrapper/
 backend/.mvn/wrapper/*
 !backend/.mvn/wrapper/maven-wrapper.properties
+
+# Temporary and local artifacts
+graphify-out/
+temp_clone/
+temp_clone_2/

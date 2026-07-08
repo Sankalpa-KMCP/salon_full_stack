@@ -11,16 +11,13 @@ The following optimized placeholder assets have been generated and integrated in
 - `portrait-stylist-1.webp` (~55 KB) - Abstract backlit silhouette for team member portraits.
 **Total Media Size Added: ~337 KB**
 
-## Recommended Specifications for Next Phase
+## Video Asset Update
+- `hero-ambience-loop.mp4` (~2.6 MB) - Slow ambient zoom loop created locally via python script from the `hero-ambience.webp` image, replacing the static placeholder. The static `.webp` is retained as a poster and for reduced-motion fallback. Future phases may consider scroll-scrubbing or scroll-triggered effects.
 
-### 1. Hero Background Video (Future Integration)
-- **Purpose**: Creates an immediate, immersive "sensory elegance" impression. Will replace `hero-ambience.webp`.
-- **Spec**: 10-15 seconds, seamless loop, muted, no audio track.
-- **Format**: MP4 or WebM, H.264/H.265 compressed.
-- **Resolution**: 1080p (or 720p if bit rate is high enough) in 16:9 or 21:9.
-- **Size Limit**: Under 2-4 MB total.
-- **Poster Image**: Requires a high-quality WebP still frame (like `hero-ambience.webp`) to show while the video loads, preventing CLS.
-- **Content**: Abstract salon aesthetic—slow-motion water splashing, steam, flowing hair, or warm amber lighting.
+## Recommended Specifications for Future Enhancements
+
+### 1. Hero Background Video (Integrated)
+- The hero section now features a cinematic MP4 loop with `motion-reduce:hidden` fallback.
 
 ### 2. Service Imagery (Hair, Color, Spa)
 - Currently populated with high-quality generated WEBP placeholders. Can be replaced with real photography later matching the same aspect ratio (16:10).

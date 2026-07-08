@@ -16,8 +16,9 @@ export default function Home() {
         
         {/* Cinematic Hero Section */}
         <section className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden">
-          {/* Media Placeholder: Future Hero Video */}
+          {/* Cinematic Hero Background */}
           <div className="absolute inset-0 z-0 bg-black">
+            {/* Fallback Image */}
             <Image
               src="/media/hero-ambience.webp"
               alt="Velvet Salon Ambience"
@@ -25,6 +26,17 @@ export default function Home() {
               priority
               className="object-cover opacity-50 mix-blend-luminosity"
             />
+            {/* Ambient Loop Video */}
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              poster="/media/hero-ambience.webp"
+              className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-luminosity motion-reduce:hidden"
+            >
+              <source src="/media/hero-ambience-loop.mp4" type="video/mp4" />
+            </video>
             {/* Temporary Gradient Overlay */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-accent/10 via-background/80 to-background opacity-80" />
             <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background" />

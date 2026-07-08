@@ -1,6 +1,13 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { featuredServices } from '@/lib/services';
 import { staffMembers } from '@/lib/staff';
+
+const serviceImageMap: Record<string, string> = {
+  'Signature Haircut': '/media/service-precision-cut.webp',
+  'Color Transformation': '/media/service-color-ritual.webp',
+  'Luxury Spa Treatment': '/media/service-spa-finish.webp',
+};
 
 export default function Home() {
   return (
@@ -11,10 +18,16 @@ export default function Home() {
         <section className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden">
           {/* Media Placeholder: Future Hero Video */}
           <div className="absolute inset-0 z-0 bg-black">
-            {/* Temporary Gradient Placeholder */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-accent/10 via-background to-background opacity-80" />
+            <Image
+              src="/media/hero-ambience.webp"
+              alt="Velvet Salon Ambience"
+              fill
+              priority
+              className="object-cover opacity-50 mix-blend-luminosity"
+            />
+            {/* Temporary Gradient Overlay */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-accent/10 via-background/80 to-background opacity-80" />
             <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background" />
-            <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')]" />
           </div>
 
           <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
@@ -80,10 +93,13 @@ export default function Home() {
             </div>
             {/* Media Placeholder: Experience Image */}
             <div className="relative order-1 lg:order-2 aspect-[4/5] w-full rounded-sm overflow-hidden bg-white/5 border border-white/10 group">
-              <div className="absolute inset-0 bg-gradient-to-tr from-accent/5 to-transparent mix-blend-overlay" />
-              <div className="absolute inset-0 flex items-center justify-center text-foreground/20 font-light tracking-widest uppercase text-sm">
-                [ Media Placeholder: Salon Interior ]
-              </div>
+              <Image
+                src="/media/service-spa-finish.webp"
+                alt="Salon Experience"
+                fill
+                className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-tr from-accent/10 to-transparent mix-blend-overlay" />
             </div>
           </div>
         </section>
@@ -117,10 +133,13 @@ export default function Home() {
                 >
                   {/* Media Placeholder: Service Image */}
                   <div className="relative aspect-[16/10] bg-white/5 overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
-                    <div className="absolute inset-0 flex items-center justify-center text-foreground/20 font-light tracking-widest text-[10px] uppercase">
-                      [ Image: {service.name} ]
-                    </div>
+                    <Image
+                      src={serviceImageMap[service.name] || '/media/hero-ambience.webp'}
+                      alt={service.name}
+                      fill
+                      className="object-cover opacity-70 group-hover:scale-105 group-hover:opacity-100 transition-all duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10" />
                   </div>
 
                   <div className="flex flex-col flex-1 p-8 relative z-20 -mt-12">
@@ -171,15 +190,13 @@ export default function Home() {
                 >
                   {/* Media Placeholder: Portrait */}
                   <div className="relative w-full aspect-[4/5] mb-8 overflow-hidden rounded-sm bg-white/5 border border-white/10">
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 opacity-80 group-hover:opacity-40 transition-opacity duration-500" />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-6xl font-display text-accent/20 group-hover:text-accent/40 transition-colors duration-500">
-                        {staff.name.charAt(0)}
-                      </span>
-                      <span className="mt-4 text-[10px] font-light tracking-widest uppercase text-foreground/20">
-                        [ Portrait Placeholder ]
-                      </span>
-                    </div>
+                    <Image
+                      src="/media/portrait-stylist-1.webp"
+                      alt={staff.name}
+                      fill
+                      className="object-cover opacity-70 group-hover:scale-105 transition-all duration-700 mix-blend-luminosity group-hover:mix-blend-normal"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent z-10 opacity-80 group-hover:opacity-40 transition-opacity duration-500" />
                   </div>
 
                   <h3 className="text-3xl font-display text-foreground mb-3">

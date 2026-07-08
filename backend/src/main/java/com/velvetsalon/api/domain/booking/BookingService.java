@@ -18,6 +18,8 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -145,5 +147,27 @@ public class BookingService {
             }
             throw ex;
         }
+    }
+
+    public AppointmentEntity getAppointmentByToken(UUID cancellationToken) {
+        return appointmentRepository.findByCancellationToken(cancellationToken)
+                .orElseThrow(() -> new BookingValidationException("Appointment not found"));
+    }
+
+    @Transactional
+    public void cancelAppointmentByToken(UUID cancellationToken) {
+        AppointmentEntity appointment = getAppointmentByToken(cancellationToken);
+
+        if (appointment.getStatus() == AppointmentStatus.CANCELLED) {
+            return;
+        }
+
+        OffsetDateTime nowColombo = OffsetDateTime.now(COLOMBO_ZONE);
+        if (appointment.getStartTime().isBefore(nowColombo.plusHours(24))) {
+            throw new BookingValidationException("Appointments cannot be cancelled within 24 hours of their start time");
+        }
+
+        appointment.setStatus(AppointmentStatus.CANCELLED);
+        appointmentRepository.saveAndFlush(appointment);
     }
 }

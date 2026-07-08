@@ -34,6 +34,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -287,5 +289,103 @@ class BookingControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest2))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Transactional
+    void getBookingByTokenReturns200() throws Exception {
+        LocalDate date = LocalDate.now(COLOMBO_ZONE).plusDays(2);
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+
+        WorkingHoursEntity wh = new WorkingHoursEntity();
+        wh.setStaff(stylistA);
+        wh.setDayOfWeek(dayOfWeek);
+        wh.setStartTime(LocalTime.of(9, 0));
+        wh.setEndTime(LocalTime.of(17, 0));
+        workingHoursRepository.saveAndFlush(wh);
+
+        Instant requestedStart = date.atTime(10, 0).atZone(COLOMBO_ZONE).toInstant();
+
+        String jsonRequest = String.format("""
+                {
+                    "serviceSlug": "haircut",
+                    "staffSlug": "jessica-stylist",
+                    "startTime": "%s",
+                    "customerName": "John Doe",
+                    "customerEmail": "john@example.com",
+                    "customerPhone": "+123456",
+                    "notes": null
+                }
+                """, requestedStart.toString());
+
+        String responseBody = mockMvc.perform(post("/api/booking")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        // Extract token using basic string manipulation for testing
+        String token = responseBody.split("\"cancellationToken\":\"")[1].split("\"")[0];
+
+        mockMvc.perform(get("/api/booking/" + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cancellationToken", is(token)))
+                .andExpect(jsonPath("$.staffSlug", is("jessica-stylist")));
+    }
+
+    @Test
+    @Transactional
+    void cancelBookingByTokenReturns204AndIsIdempotent() throws Exception {
+        LocalDate date = LocalDate.now(COLOMBO_ZONE).plusDays(2);
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+
+        WorkingHoursEntity wh = new WorkingHoursEntity();
+        wh.setStaff(stylistA);
+        wh.setDayOfWeek(dayOfWeek);
+        wh.setStartTime(LocalTime.of(9, 0));
+        wh.setEndTime(LocalTime.of(17, 0));
+        workingHoursRepository.saveAndFlush(wh);
+
+        Instant requestedStart = date.atTime(10, 0).atZone(COLOMBO_ZONE).toInstant();
+
+        String jsonRequest = String.format("""
+                {
+                    "serviceSlug": "haircut",
+                    "staffSlug": "jessica-stylist",
+                    "startTime": "%s",
+                    "customerName": "John Doe",
+                    "customerEmail": "john@example.com",
+                    "customerPhone": "+123456",
+                    "notes": null
+                }
+                """, requestedStart.toString());
+
+        String responseBody = mockMvc.perform(post("/api/booking")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        String token = responseBody.split("\"cancellationToken\":\"")[1].split("\"")[0];
+
+        // 1. First cancellation -> 204
+        mockMvc.perform(delete("/api/booking/" + token))
+                .andExpect(status().isNoContent());
+
+        // 2. Fetch returns CANCELLED
+        mockMvc.perform(get("/api/booking/" + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is("CANCELLED")));
+
+        // 3. Second cancellation is idempotent -> 204
+        mockMvc.perform(delete("/api/booking/" + token))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @Transactional
+    void getUnknownBookingReturns404() throws Exception {
+        mockMvc.perform(get("/api/booking/" + java.util.UUID.randomUUID()))
+                .andExpect(status().isNotFound());
     }
 }

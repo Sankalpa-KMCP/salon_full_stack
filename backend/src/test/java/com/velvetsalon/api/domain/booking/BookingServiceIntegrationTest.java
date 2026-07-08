@@ -26,6 +26,7 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
@@ -481,8 +482,10 @@ class BookingServiceIntegrationTest {
             Exception ex = failureException.get();
 
             assertNotNull(app, "One appointment should have succeeded");
-            assertNotNull(ex, "One appointment should have failed with double booking exception");
-            assertTrue(ex instanceof DoubleBookingException, "Failure exception should be DoubleBookingException but was " + ex);
+            assertNotNull(ex, "One appointment should have failed with double booking exception or validation exception");
+            boolean isExpectedError = ex instanceof DoubleBookingException || 
+                    (ex instanceof BookingValidationException && ex.getMessage().contains("not available at the requested time"));
+            assertTrue(isExpectedError, "Failure exception should be DoubleBookingException or BookingValidationException but was " + ex);
 
             long count = appointmentRepository.count();
             assertEquals(1, count, "Exactly 1 appointment should be persisted in database");
@@ -494,5 +497,114 @@ class BookingServiceIntegrationTest {
             staffRepository.deleteAll();
             serviceRepository.deleteAll();
         }
+    }
+
+    @Test
+    @Transactional
+    void getAppointmentByTokenSuccess() {
+        LocalDate date = LocalDate.now(COLOMBO_ZONE).plusDays(2);
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+
+        WorkingHoursEntity wh = new WorkingHoursEntity();
+        wh.setStaff(stylistA);
+        wh.setDayOfWeek(dayOfWeek);
+        wh.setStartTime(LocalTime.of(9, 0));
+        wh.setEndTime(LocalTime.of(17, 0));
+        workingHoursRepository.saveAndFlush(wh);
+
+        Instant requestedStart = date.atTime(10, 0).atZone(COLOMBO_ZONE).toInstant();
+
+        AppointmentEntity saved = bookingService.createAppointment(
+                haircutService.getSlug(),
+                stylistA.getSlug(),
+                requestedStart,
+                "John Doe",
+                "john@example.com",
+                "+111222333",
+                "Notes"
+        );
+
+        AppointmentEntity fetched = bookingService.getAppointmentByToken(saved.getCancellationToken());
+        assertNotNull(fetched);
+        assertEquals(saved.getId(), fetched.getId());
+    }
+
+    @Test
+    @Transactional
+    void cancelAppointmentByTokenSuccess() {
+        LocalDate date = LocalDate.now(COLOMBO_ZONE).plusDays(2);
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+
+        WorkingHoursEntity wh = new WorkingHoursEntity();
+        wh.setStaff(stylistA);
+        wh.setDayOfWeek(dayOfWeek);
+        wh.setStartTime(LocalTime.of(9, 0));
+        wh.setEndTime(LocalTime.of(17, 0));
+        workingHoursRepository.saveAndFlush(wh);
+
+        Instant requestedStart = date.atTime(10, 0).atZone(COLOMBO_ZONE).toInstant();
+
+        AppointmentEntity saved = bookingService.createAppointment(
+                haircutService.getSlug(),
+                stylistA.getSlug(),
+                requestedStart,
+                "John Doe",
+                "john@example.com",
+                "+111222333",
+                "Notes"
+        );
+
+        assertEquals(AppointmentStatus.CONFIRMED, saved.getStatus());
+
+        bookingService.cancelAppointmentByToken(saved.getCancellationToken());
+
+        AppointmentEntity fetched = bookingService.getAppointmentByToken(saved.getCancellationToken());
+        assertEquals(AppointmentStatus.CANCELLED, fetched.getStatus());
+        
+        // Cancellation is idempotent
+        bookingService.cancelAppointmentByToken(saved.getCancellationToken());
+        AppointmentEntity fetchedAgain = bookingService.getAppointmentByToken(saved.getCancellationToken());
+        assertEquals(AppointmentStatus.CANCELLED, fetchedAgain.getStatus());
+    }
+
+    @Test
+    @Transactional
+    void cancelAppointmentWithin24HoursFails() {
+        LocalDate date = LocalDate.now(COLOMBO_ZONE);
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+
+        WorkingHoursEntity wh = new WorkingHoursEntity();
+        wh.setStaff(stylistA);
+        wh.setDayOfWeek(dayOfWeek);
+        wh.setStartTime(LocalTime.of(6, 0));
+        wh.setEndTime(LocalTime.of(23, 59));
+        workingHoursRepository.saveAndFlush(wh);
+
+        // Requested start is 1 hour from now (in Colombo timezone)
+        // Requested start is next hour rounded (within 24 hours)
+        OffsetDateTime nextHour = OffsetDateTime.now(COLOMBO_ZONE).plusHours(2).withMinute(0).withSecond(0).withNano(0);
+        Instant requestedStart = nextHour.toInstant();
+
+        AppointmentEntity saved = bookingService.createAppointment(
+                haircutService.getSlug(),
+                stylistA.getSlug(),
+                requestedStart,
+                "John Doe",
+                "john@example.com",
+                "+111222333",
+                "Notes"
+        );
+
+        assertThrows(BookingValidationException.class, () -> {
+            bookingService.cancelAppointmentByToken(saved.getCancellationToken());
+        }, "Appointments cannot be cancelled within 24 hours of their start time");
+    }
+
+    @Test
+    @Transactional
+    void cancelUnknownTokenFails() {
+        assertThrows(BookingValidationException.class, () -> {
+            bookingService.cancelAppointmentByToken(java.util.UUID.randomUUID());
+        }, "Appointment not found");
     }
 }

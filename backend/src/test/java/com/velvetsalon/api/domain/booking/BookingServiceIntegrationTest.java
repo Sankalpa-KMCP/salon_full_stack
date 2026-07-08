@@ -483,7 +483,7 @@ class BookingServiceIntegrationTest {
 
             assertNotNull(app, "One appointment should have succeeded");
             assertNotNull(ex, "One appointment should have failed with double booking exception or validation exception");
-            boolean isExpectedError = ex instanceof DoubleBookingException || 
+            boolean isExpectedError = ex instanceof DoubleBookingException ||
                     (ex instanceof BookingValidationException && ex.getMessage().contains("not available at the requested time"));
             assertTrue(isExpectedError, "Failure exception should be DoubleBookingException or BookingValidationException but was " + ex);
 
@@ -560,7 +560,7 @@ class BookingServiceIntegrationTest {
 
         AppointmentEntity fetched = bookingService.getAppointmentByToken(saved.getCancellationToken());
         assertEquals(AppointmentStatus.CANCELLED, fetched.getStatus());
-        
+
         // Cancellation is idempotent
         bookingService.cancelAppointmentByToken(saved.getCancellationToken());
         AppointmentEntity fetchedAgain = bookingService.getAppointmentByToken(saved.getCancellationToken());

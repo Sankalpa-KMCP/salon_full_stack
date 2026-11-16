@@ -18,13 +18,13 @@ Customers can browse treatments, view stylist schedules in real time, book appoi
 
 ## Key Features
 
-- 💇 **Interactive Booking Flow:** Multi-step wizard to select treatments, pick preferred stylists, browse available dates, and reserve time slots.
-- ⚡ **Real-Time Availability Engine:** Dynamic slot calculation (`AvailabilityService`) that cross-checks stylist working hours, scheduled breaks, service durations, and existing reservations.
-- 🛡️ **Conflict & Double-Booking Prevention:** Backend validation guards against overlapping bookings (`DoubleBookingException`) and verifies stylist qualifications (`UnqualifiedStylistException`).
-- 🎟️ **Frictionless Self-Service Management:** Customers receive a secure cancellation token upon booking, allowing them to look up or cancel appointments on `/booking/manage` without creating an account.
-- 📦 **Automated Schema Migrations:** Production-ready database version control using **Flyway**, with automated schema generation and seed fixtures (`SeedDataConfig`).
-- 🐳 **Containerized Local Stack:** Ready-to-run `docker-compose.yml` for local PostgreSQL orchestration.
-- 🧪 **Comprehensive Integration Testing:** Full-stack test suite covering JPA repositories, domain services, web controllers, and Next.js frontend builds.
+- **Interactive Booking Flow:** Multi-step wizard to select treatments, pick preferred stylists, browse available dates, and reserve time slots.
+- **Real-Time Availability Engine:** Dynamic slot calculation (`AvailabilityService`) that cross-checks stylist working hours, scheduled breaks, service durations, and existing reservations.
+- **Conflict & Double-Booking Prevention:** Backend validation guards against overlapping bookings (`DoubleBookingException`) and verifies stylist qualifications (`UnqualifiedStylistException`).
+- **Frictionless Self-Service Management:** Customers receive a secure cancellation token upon booking, allowing them to look up or cancel appointments on `/booking/manage` without creating an account.
+- **Automated Schema Migrations:** Production-ready database version control using **Flyway**, with automated schema generation and seed fixtures (`SeedDataConfig`).
+- **Containerized Local Stack:** Ready-to-run `docker-compose.yml` for local PostgreSQL orchestration.
+- **Comprehensive Integration Testing:** Full-stack test suite covering JPA repositories, domain services, web controllers, and Next.js frontend builds.
 
 ---
 
